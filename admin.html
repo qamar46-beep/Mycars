@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Studio</title>
+<style>
+:root{--gold:#d4a017;--gold2:#f5d77a;--bg:#0a0a0c;--card:#141418;--card2:#1b1b21;--line:#2a2a33;--text:#f2f2f5;--muted:#9a9aa6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:radial-gradient(circle at 20% -10%,#2a2108 0,var(--bg) 45%);color:var(--text);height:100vh;overflow:hidden}
+.app{display:grid;grid-template-columns:minmax(380px,480px) 1fr;height:100vh}
+.edit{overflow:auto;padding:18px 20px 40px}
+.top{position:sticky;top:-18px;z-index:5;background:rgba(10,10,12,.88);backdrop-filter:blur(12px);padding:18px 0 12px;margin-top:-18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+h1{font-size:20px;background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.top small{color:var(--muted);font-size:12px}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+button{cursor:pointer;border:0;border-radius:999px;padding:9px 16px;font:inherit;font-size:13px;font-weight:700;transition:.2s}
+button:disabled{opacity:.3;cursor:default}
+.gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000}
+.line{background:transparent;border:1px solid var(--gold);color:var(--gold)}
+.sm{background:var(--card2);color:var(--text);border:1px solid var(--line);padding:6px 12px;font-size:12px}
+.del{background:#4c1010;color:#fecaca;border:1px solid #7f1d1d}
+.pvb,#pvClose{display:none}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:14px 0 6px}
+.tabs button{background:var(--card);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.tabs button.on{background:var(--gold);color:#000;border-color:var(--gold)}
+.sec{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+.sec h3{font-size:15px;margin-bottom:6px;color:var(--gold2)}
+.sec p.hint{font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.6}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.f{margin-top:8px}
+.f label,.f>span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:.3px}
+.f small{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+input[type=text],input[type=number],input:not([type]),input[type=url],input[type=email],textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0d0d10;color:var(--text);font:inherit;font-size:14px}
+input:focus,textarea:focus{outline:none;border-color:var(--gold)}
+input[type=color]{width:100%;height:40px;border:1px solid var(--line);border-radius:10px;background:#0d0d10;padding:3px;cursor:pointer}
+textarea{resize:vertical}
+.sw{display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer;font-size:14px}
+.sw input{width:18px;height:18px;accent-color:var(--gold)}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+.item.sold{border-color:#7f1d1d}
+.ih{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.ih b{font-size:14px}
+.ab{display:flex;gap:6px;flex-wrap:wrap}
+.imgf{display:flex;gap:12px;align-items:center}
+.imgf img,.imgf .ph{width:86px;height:58px;border-radius:10px;object-fit:cover;border:1px solid var(--line);background:#0d0d10}
+.imgf .ph{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted)}
+label.up{display:inline-block;background:var(--card2);border:1px solid var(--gold);color:var(--gold);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;margin:0 6px 0 0}
+.pre{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.pre button{padding:8px 14px;border:1px solid var(--line);color:#fff}
+.banner{background:#1a1500;border:1px solid var(--gold);border-radius:12px;padding:12px 14px;margin-top:12px;font-size:13px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.help li{margin:8px 0 8px 18px;line-height:1.8;font-size:14px}
+.add{margin-top:12px}
+.prev{border-left:1px solid var(--line);display:flex;flex-direction:column;background:#000}
+.pt{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.pt div{display:flex;gap:6px}
+.fr{flex:1;display:flex;justify-content:center;background:#111;overflow:hidden}
+iframe{border:0;width:100%;height:100%;background:#000;transition:width .3s}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .prev{position:fixed;inset:0;z-index:50;display:none}
+  .prev.show{display:flex}
+  .pvb,#pvClose{display:inline-block}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="edit">
+    <div class="top">
+      <div><h1>Admin Studio</h1><small id="st">Koi badlav nahi</small></div>
+      <div class="acts">
+        <button class="line pvb" id="pvOpen">Preview</button>
+        <button class="gold" id="dl">Download data.js</button>
+        <button class="line" id="cp">Copy</button>
+      </div>
+    </div>
+    <div id="banner"></div>
+    <div class="tabs" id="tabs"></div>
+    <div id="panel"></div>
+  </div>
+  <div class="prev" id="prev">
+    <div class="pt"><span>Live Preview</span><div><button class="sm" data-w="100%">Desktop</button><button class="sm" data-w="390px">Mobile</button><button class="sm" id="pvClose">Close</button></div></div>
+    <div class="fr"><iframe id="pv" src="index.html" title="Preview"></iframe></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+/* ---------- defaults, presets ---------- */
+const PRESETS=[
+ {n:"Black Gold",t:{gold:"#d4a017",gold2:"#f5d77a",bg:"#050505",card:"#111111",line:"#262626",text:"#f2f2f2",muted:"#9a9a9a",onGold:"#000000",hero1:"#000000",hero2:"#1c1c1c"}},
+ {n:"Red Black",t:{gold:"#e11d48",gold2:"#fb7185",bg:"#070707",card:"#121212",line:"#2a2a2a",text:"#f5f5f5",muted:"#a0a0a0",onGold:"#ffffff",hero1:"#000000",hero2:"#4c0519"}},
+ {n:"Royal Blue",t:{gold:"#3b82f6",gold2:"#93c5fd",bg:"#060b16",card:"#0e1626",line:"#1e2a44",text:"#eef3ff",muted:"#8fa0c0",onGold:"#ffffff",hero1:"#020617",hero2:"#1e3a8a"}},
+ {n:"Emerald",t:{gold:"#10b981",gold2:"#6ee7b7",bg:"#05100c",card:"#0c1a15",line:"#1b2e27",text:"#ecfdf5",muted:"#86a89b",onGold:"#00170f",hero1:"#00110b",hero2:"#064e3b"}},
+ {n:"Clean Light",t:{gold:"#d97706",gold2:"#f59e0b",bg:"#f6f7fb",card:"#ffffff",line:"#e3e6ee",text:"#14181f",muted:"#5d6675",onGold:"#ffffff",hero1:"#111827",hero2:"#7c2d12"}}
+];
+const DEFAULTS={
+ SHOP:{name:"Your Showroom Name",tagline:"",phone:"",email:"",address:"",timing:"",currency:"Rs",mapLink:"",facebook:"",instagram:"",youtube:"",logo:"",footer:""},
+ HERO:{badge:"",title:"",btn1:"Explore Cars",btn2:"WhatsApp Us"},
+ THEME:PRESETS[0].t,
+ SECTIONS:{stats:true,marquee:true,about:true,reviews:true,contact:true,chat:true,fab:true},
+ TEXT:{carsTitle:"Our Cars",carsSub:"",carsStat:"Cars Available",aboutTitle:"About Us",aboutText:"",reviewsTitle:"Customer Reviews",reviewsSub:"",contactTitle:"Contact Us"},
+ STATS:[],CARS:[],REVIEWS:[],
+ CHAT:{botName:"Support",greeting:"",placeholder:"",fallback:"",faqs:[]}
+};
+const NEW={
+ CARS:()=>({n:"New Car",t:"Sedan",y:new Date().getFullYear(),p:"0",c:"#d4a017",img:"",d:"",tag:"",sold:false}),
+ REVIEWS:()=>({name:"Customer Name",rating:5,text:"",car:"",date:"",show:false}),
+ STATS:()=>({n:0,s:"+",l:"Label"}),
+ "CHAT.faqs":()=>({k:"",q:"New question",a:""})
+};
+function merge(a,b){
+  if(a===null||typeof a!=="object"||Array.isArray(a))return b===undefined?a:b;
+  const o={};for(const k in a)o[k]=merge(a[k],b&&b[k]);
+  for(const k in (b||{}))if(!(k in o))o[k]=b[k];
+  return o;
+}
+const clone=x=>JSON.parse(JSON.stringify(x));
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const gp=(o,p)=>p.split(".").reduce((x,k)=>x==null?x:x[k],o);
+const sp=(o,p,v)=>{const ks=p.split(".");const l=ks.pop();ks.reduce((x,k)=>x[k],o)[l]=v};
+
+const BASE=merge(DEFAULTS,window.SITE_DATA||{});
+let D=clone(BASE),cur="shop",dirty=false;
+const KEY="adminStudioDraft_v1";
+
+/* ---------- field helpers ---------- */
+function F(p,label,o){
+  o=o||{};const v=gp(D,p),t=o.type||"text";
+  if(t==="check")return `<label class="sw"><input type="checkbox" data-p="${p}" ${v?"checked":""}><span>${label}</span></label>`;
+  const hint=o.hint?`<small>${o.hint}</small>`:"";
+  if(t==="area")return `<div class="f"><label>${label}</label><textarea rows="${o.rows||3}" data-p="${p}" placeholder="${esc(o.ph||"")}">${esc(v)}</textarea>${hint}</div>`;
+  const mm=o.min!=null?` min="${o.min}" max="${o.max}"`:"";
+  return `<div class="f"><label>${label}</label><input type="${t}" data-p="${p}" value="${esc(v)}" placeholder="${esc(o.ph||"")}"${mm}>${hint}</div>`;
+}
+function IMG(p,label,max,png){
+  const v=gp(D,p);
+  return `<div class="f"><span>${label}</span><div class="imgf">${v?`<img src="${esc(v)}" alt="">`:`<div class="ph">Photo nahi</div>`}<div><label class="up">Photo chuno<input type="file" accept="image/*" data-img="${p}" data-max="${max}" ${png?'data-png="1"':""} hidden></label>${v?`<button class="sm" data-act="clrimg" data-p="${p}">Hatao</button>`:""}</div></div></div>`;
+}
+function bar(arr,i,len){
+  return `<div class="ab"><button class="sm" data-act="up" data-arr="${arr}" data-i="${i}" ${i===0?"disabled":""}>&uarr;</button><button class="sm" data-act="down" data-arr="${arr}" data-i="${i}" ${i===len-1?"disabled":""}>&darr;</button><button class="sm" data-act="dup" data-arr="${arr}" data-i="${i}">Copy</button><button class="sm del" data-act="del" data-arr="${arr}" data-i="${i}">Delete</button></div>`;
+}
+const SEC=(title,hint,body)=>`<div class="sec"><h3>${title}</h3>${hint?`<p class="hint">${hint}</p>`:""}${body}</div>`;
+
+/* ---------- tabs ---------- */
+const TABS=[["shop","Showroom"],["hero","Home & Stats"],["theme","Theme"],["sections","Sections"],["cars","Cars"],["reviews","Reviews"],["chat","Chat Support"],["help","Help"]];
+const R={
+shop:()=>SEC("Showroom Details","Yeh details poori website mein use hoti hain.",
+  `<div class="g">${F("SHOP.name","Showroom Name")}${F("SHOP.currency","Currency (Rs ya $)")}</div>`+
+  F("SHOP.tagline","Tagline")+
+  `<div class="g">${F("SHOP.phone","WhatsApp / Phone",{ph:"923001234567",hint:"Country code ke saath, bina + ke"})}${F("SHOP.email","Email",{type:"email"})}</div>`+
+  F("SHOP.address","Address")+F("SHOP.timing","Timing")+F("SHOP.mapLink","Google Map Link",{type:"url",ph:"https://maps.google.com/..."})+
+  IMG("SHOP.logo","Logo (optional)",260,true))+
+  SEC("Social Links","Khali chor do to nazar nahi aayenge.",F("SHOP.facebook","Facebook",{type:"url"})+F("SHOP.instagram","Instagram",{type:"url"})+F("SHOP.youtube","YouTube",{type:"url"}))+
+  SEC("Footer","",F("SHOP.footer","Footer text",{hint:"Khali ho to copyright line khud ban jayegi."})),
+
+hero:()=>SEC("Home Banner","",
+  F("HERO.badge","Chhota badge (upar)",{ph:"Trusted Car Showroom"})+
+  F("HERO.title","Bara title",{hint:"Khali ho to showroom ka naam use hoga."})+
+  `<div class="g">${F("HERO.btn1","Button 1 text")}${F("HERO.btn2","Button 2 text (WhatsApp)")}</div>`)+
+  SEC("Counters (Stats)","Cars ki ginti khud ho jati hai. Baqi numbers sirf sach likhein.",
+  D.STATS.map((x,i)=>`<div class="item"><div class="ih"><b>Counter ${i+1}</b>${bar("STATS",i,D.STATS.length)}</div><div class="g">${F(`STATS.${i}.n`,"Number",{type:"number"})}${F(`STATS.${i}.s`,"Suffix (+)")}${F(`STATS.${i}.l`,"Label")}</div></div>`).join("")+
+  `<button class="line add" data-act="add" data-arr="STATS">+ Counter add karo</button>`),
+
+theme:()=>SEC("Ready-made Themes","Ek click se poora rang badal jata hai.",
+  `<div class="pre">${PRESETS.map((p,i)=>`<button data-act="preset" data-i="${i}" style="background:linear-gradient(135deg,${p.t.hero1},${p.t.hero2});border-color:${p.t.gold}">${p.n}</button>`).join("")}</div>`)+
+  SEC("Apne Rang","Har rang alag se badal sakte ho.",
+  `<div class="g">${[["gold","Main rang (buttons, price)"],["gold2","Halka rang (chamak)"],["bg","Page background"],["card","Cards ka rang"],["line","Lines / borders"],["text","Likhai ka rang"],["muted","Halki likhai"],["onGold","Main rang par likhai"],["hero1","Banner shuru"],["hero2","Banner aakhir"]].map(([k,l])=>F("THEME."+k,l,{type:"color"})).join("")}</div>`),
+
+sections:()=>SEC("Sections On / Off","Jo section nahi chahiye use band kar do.",
+  ["stats|Counters","marquee|Brands ki patti","about|About Us","reviews|Reviews","contact|Contact","chat|Chat support","fab|WhatsApp floating button"].map(x=>{const [k,l]=x.split("|");return F("SECTIONS."+k,l,{type:"check"})}).join(""))+
+  SEC("Section Titles & Text","Title ka aakhri lafz rangeen nazar aata hai.",
+  `<div class="g">${F("TEXT.carsTitle","Cars title")}${F("TEXT.carsStat","Cars counter label")}</div>`+F("TEXT.carsSub","Cars subtitle")+
+  F("TEXT.aboutTitle","About title")+F("TEXT.aboutText","About text",{type:"area",rows:5})+
+  F("TEXT.reviewsTitle","Reviews title")+F("TEXT.reviewsSub","Reviews subtitle")+F("TEXT.contactTitle","Contact title")),
+
+cars:()=>SEC(`Cars (${D.CARS.length})`,"Photo choose karoge to wo khud chhoti ho kar data.js mein save ho jati hai, alag upload ki zaroorat nahi.",
+  D.CARS.map((c,i)=>`<div class="item${c.sold?" sold":""}"><div class="ih"><b>${i+1}. ${esc(c.n)}</b>${bar("CARS",i,D.CARS.length)}</div>
+   <div class="g">${F(`CARS.${i}.n`,"Car ka naam")}${F(`CARS.${i}.t`,"Type (Sedan, SUV...)")}${F(`CARS.${i}.y`,"Model year",{type:"number"})}${F(`CARS.${i}.p`,"Price",{hint:"Khali ho to Call for price"})}</div>
+   ${F(`CARS.${i}.d`,"Chhoti detail",{ph:"25,000 km, Petrol, Auto"})}
+   <div class="g">${F(`CARS.${i}.tag`,"Tag (Hot Deal, New...)")}${F(`CARS.${i}.c`,"Car ka rang (photo na ho to)",{type:"color"})}</div>
+   ${IMG(`CARS.${i}.img`,"Car ki photo",900,false)}
+   ${F(`CARS.${i}.sold`,"Sold ho gayi",{type:"check"})}</div>`).join("")+
+  `<button class="line add" data-act="add" data-arr="CARS">+ Nayi car add karo</button>`),
+
+reviews:()=>{const v=D.REVIEWS.filter(r=>r.show);const avg=v.length?(v.reduce((a,r)=>a+(+r.rating||0),0)/v.length).toFixed(1):"-";
+  return SEC(`Reviews (${D.REVIEWS.length})`,`Website par dikhne wale: ${v.length}, average rating: ${avg}. Sirf asli customers ke reviews lagayein. "Website par dikhao" on kiye baghair review nahi dikhta.`,
+  D.REVIEWS.map((r,i)=>`<div class="item"><div class="ih"><b>${i+1}. ${esc(r.name)}</b>${bar("REVIEWS",i,D.REVIEWS.length)}</div>
+   <div class="g">${F(`REVIEWS.${i}.name`,"Customer ka naam")}${F(`REVIEWS.${i}.rating`,"Rating (1 se 5)",{type:"number",min:1,max:5})}${F(`REVIEWS.${i}.car`,"Car (optional)")}${F(`REVIEWS.${i}.date`,"Date (optional)",{ph:"Oct 2026"})}</div>
+   ${F(`REVIEWS.${i}.text`,"Review",{type:"area",rows:3})}
+   ${F(`REVIEWS.${i}.show`,"Website par dikhao",{type:"check"})}</div>`).join("")+
+  `<button class="line add" data-act="add" data-arr="REVIEWS">+ Naya review add karo</button>`)},
+
+chat:()=>SEC("Chat Support","Customer ke liye chat bubble. Wo sawal poochta hai, bot keywords se jawab deta hai, na samajh aaye to WhatsApp par bhej deta hai.",
+  `<div class="g">${F("CHAT.botName","Chat ka naam")}${F("CHAT.placeholder","Input ka placeholder")}</div>`+
+  F("CHAT.greeting","Pehla message",{type:"area",rows:2})+
+  F("CHAT.fallback","Jawab na milne par message",{type:"area",rows:2}))+
+  SEC(`Aam Sawal / Jawab (${D.CHAT.faqs.length})`,"Keywords comma se alag likho (jaise: price, rate, qeemat). Jawab mein {timing}, {address}, {phone}, {name} khud bhar jate hain.",
+  D.CHAT.faqs.map((f,i)=>`<div class="item"><div class="ih"><b>${i+1}. ${esc(f.q)}</b>${bar("CHAT.faqs",i,D.CHAT.faqs.length)}</div>
+   ${F(`CHAT.faqs.${i}.q`,"Sawal (button par likha hoga)")}${F(`CHAT.faqs.${i}.k`,"Keywords (comma se)")}${F(`CHAT.faqs.${i}.a`,"Jawab",{type:"area",rows:2})}</div>`).join("")+
+  `<button class="line add" data-act="add" data-arr="CHAT.faqs">+ Naya sawal add karo</button>`),
+
+help:()=>SEC("Badlav live kaise karein","",
+  `<ol class="help"><li>Yahan jo badlav karo wo right side ke Preview mein foran nazar aata hai.</li>
+  <li><b>Download data.js</b> dabao.</li>
+  <li>GitHub repository mein jao, <b>Add file, Upload files</b> se naya <b>data.js</b> drop karo (purani file badal jayegi) aur <b>Commit changes</b> dabao.</li>
+  <li>1 se 2 minute baad website update ho jati hai.</li></ol>`)+
+  SEC("Zaroori baatein","",
+  `<ol class="help"><li>Website par kaam sirf <b>data.js</b> se chalta hai. Photos us ke andar hi save hoti hain, is liye bohat zyada bari photos mat lagao.</li>
+  <li>Chat support asli live agent chat nahi hai. Bot FAQ ka jawab deta hai aur baqi baat customer ko WhatsApp par bhej deta hai.</li>
+  <li>Is page par password nahi hai. Koi bhi isay khol kar badlav kar sakta hai, lekin website tab tak nahi badalti jab tak data.js GitHub par upload na ho.</li>
+  <li>Page band karne se pehle Download zaroor kar lo. Adhura kaam is browser mein khud save rehta hai.</li></ol>`)
+};
+
+function render(){
+  $("tabs").innerHTML=TABS.map(([k,l])=>`<button class="${k===cur?"on":""}" data-tab="${k}">${l}</button>`).join("");
+  $("panel").innerHTML=R[cur]();
+}
+
+/* ---------- changes, preview, draft ---------- */
+let tSend,tSave;
+function status(){
+  const kb=Math.round(JSON.stringify(D).length/1024);
+  $("st").textContent=(dirty?"Download baqi hai":"Koi badlav nahi")+" • "+(kb>1024?(kb/1024).toFixed(1)+" MB":kb+" KB");
+}
+function sendPv(){try{$("pv").contentWindow.postMessage({type:"draft",data:D},"*")}catch(e){}}
+function changed(){
+  dirty=true;status();
+  clearTimeout(tSend);tSend=setTimeout(sendPv,200);
+  clearTimeout(tSave);tSave=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}},700);
+}
+$("pv").addEventListener("load",sendPv);
+
+document.addEventListener("input",e=>{
+  const t=e.target,p=t.dataset&&t.dataset.p;if(!p)return;
+  let v;
+  if(t.type==="checkbox")v=t.checked;
+  else if(t.type==="number")v=t.value===""?"":Number(t.value);
+  else v=t.value;
+  sp(D,p,v);changed();
+  if(t.type==="checkbox"&&(p.endsWith(".sold")||p.endsWith(".show")))render();
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.img&&t.files&&t.files[0]){
+    const p=t.dataset.img,max=+t.dataset.max||900,png=!!t.dataset.png;
+    shrink(t.files[0],max,png,url=>{sp(D,p,url);changed();render()});
+  }
+});
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  const d=b.dataset;
+  if(d.tab){cur=d.tab;render();$("panel").scrollIntoView();return}
+  if(d.w){$("pv").style.width=d.w;return}
+  const act=d.act;if(!act)return;
+  const arr=d.arr?gp(D,d.arr):null,i=+d.i;
+  if(act==="add"){arr.push(NEW[d.arr]());}
+  else if(act==="del"){if(!confirm("Pakka delete karna hai?"))return;arr.splice(i,1)}
+  else if(act==="dup"){arr.splice(i+1,0,clone(arr[i]))}
+  else if(act==="up"&&i>0){[arr[i-1],arr[i]]=[arr[i],arr[i-1]]}
+  else if(act==="down"&&i<arr.length-1){[arr[i+1],arr[i]]=[arr[i],arr[i+1]]}
+  else if(act==="preset"){D.THEME=clone(PRESETS[i].t)}
+  else if(act==="clrimg"){sp(D,d.p,"")}
+  changed();render();
+  if(act==="add")$("panel").lastElementChild.scrollIntoView({behavior:"smooth",block:"end"});
+});
+
+function shrink(file,max,png,cb){
+  const r=new FileReader();
+  r.onload=()=>{const im=new Image();
+    im.onload=()=>{const k=Math.min(1,max/im.width);const c=document.createElement("canvas");
+      c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+      c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+      cb(png?c.toDataURL("image/png"):c.toDataURL("image/jpeg",.74))};
+    im.onerror=()=>alert("Yeh photo nahi khul saki, doosri try karo.");
+    im.src=r.result};
+  r.readAsDataURL(file);
+}
+
+/* ---------- export ---------- */
+function out(){
+  const d=clone(D);
+  d.SHOP.phone=String(d.SHOP.phone).replace(/\D/g,"");
+  if(!String(d.SHOP.name).trim()){alert("Showroom ka naam likho.");return null}
+  if(d.SHOP.phone.length<10){alert("Phone number sahi likho (jaise 923001234567).");return null}
+  return "window.SITE_DATA = "+JSON.stringify(d,null,2)+";\n";
+}
+$("dl").onclick=()=>{
+  const t=out();if(!t)return;
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([t],{type:"text/javascript"}));
+  a.download="data.js";document.body.appendChild(a);a.click();a.remove();
+  dirty=false;status();
+};
+$("cp").onclick=async()=>{
+  const t=out();if(!t)return;
+  try{await navigator.clipboard.writeText(t);alert("Copy ho gaya.")}catch(e){alert("Copy nahi hua, Download data.js use karo.")}
+};
+$("pvOpen").onclick=()=>$("prev").classList.add("show");
+$("pvClose").onclick=()=>$("prev").classList.remove("show");
+addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
+
+/* ---------- draft restore ---------- */
+try{
+  const raw=localStorage.getItem(KEY);
+  if(raw&&raw!==JSON.stringify(BASE)){
+    $("banner").innerHTML=`<div class="banner"><span>Pichla adhura kaam mila.</span><span><button class="gold" id="rs">Wapas lao</button> <button class="sm" id="ds">Rehne do</button></span></div>`;
+    $("rs").onclick=()=>{D=merge(DEFAULTS,JSON.parse(raw));$("banner").innerHTML="";render();changed()};
+    $("ds").onclick=()=>{try{localStorage.removeItem(KEY)}catch(e){}$("banner").innerHTML=""};
+  }
+}catch(e){}
+
+render();status();
+</script>
+</body>
+</html>
