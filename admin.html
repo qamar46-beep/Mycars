@@ -231,7 +231,8 @@ function changed(){
   clearTimeout(tSend);tSend=setTimeout(sendPv,200);
   clearTimeout(tSave);tSave=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}},700);
 }
-$("pv").addEventListener("load",sendPv);
+$("pv").addEventListener("load",()=>{sendPv();setTimeout(sendPv,600);setTimeout(sendPv,1800)});
+setTimeout(sendPv,800);setTimeout(sendPv,2200);
 
 document.addEventListener("input",e=>{
   const t=e.target,p=t.dataset&&t.dataset.p;if(!p)return;
